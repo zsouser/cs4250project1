@@ -78,6 +78,5 @@ public class Document {
 	
 	public ArrayList<String> letters() {
 		return this.letters;
-	}
-	
+	}	
 }
