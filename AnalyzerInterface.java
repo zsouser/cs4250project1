@@ -1,3 +1,4 @@
+import java.io.FileNotFoundException;
 import java.util.List;
 
 /**
@@ -16,8 +17,9 @@ public interface AnalyzerInterface {
 	/**
 	 * Sends the fileName to be parsed in Document.
 	 * @param fileName
+	 * @throws FileNotFoundException 
 	 */
-	void getDocumentData( String fileName );
+	void getDocumentData( String fileName ) throws FileNotFoundException;
 	
 	/**
 	 * Calculates the metadata for (call Document functions).
@@ -39,7 +41,7 @@ public interface AnalyzerInterface {
 	/**
 	 * Send message of results to the user.
 	 */
-	void reportResultsToUser();
+	void reportResultsToUser( List<Author> authDiffs );
 	
 	
 	/****************************************************************
@@ -54,7 +56,7 @@ public interface AnalyzerInterface {
 	 * @return List<Integer> authorshipDifferences - list of total 
 	 * differences between the known and unknown author. 
 	 */
-	List<Integer> compareUnkownToAuthors( List<String> knownAuthors );
+	List<Author> compareUnkownToAuthors( List<String> knownAuthors );
 	
 	/**
 	 * Sorts the known authors by their overall difference with the unknown
@@ -63,7 +65,7 @@ public interface AnalyzerInterface {
 	 * @return List<Integer> authorshipDifferences  - a sorted list of authorship
 	 * differences.
 	 */
-	List<Integer> rankAuthorsForSimilarity( List<Integer> authorshipDifferences );
+	List<Author> rankAuthorsForSimilarity( List<Author> authDiffs );
 	
 	
 	
