@@ -13,8 +13,6 @@
 // eclipse:
 // project --> properties --> java build path --> libraries --> add extern jar
 
-package stylometric;
-
 import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.SQLException;
