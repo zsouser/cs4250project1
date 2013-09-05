@@ -87,7 +87,8 @@ public class DatabaseConnection
     PreparedStatement stmt;
     String sql;
     
-    sql = "create table if not exists public.writings ("
+    sql = "create table if not exists public.writings"
+        + "("
         + "    id                       serial"
         + "  , id_author                int4"
         + "  , n_total_sentences        int4"
@@ -106,12 +107,13 @@ public class DatabaseConnection
     stmt.executeUpdate();
     stmt.close();
     
-    sql = "create table if not exists public.authors ("
+    sql = "create table if not exists public.authors"
+        + "("
         + "    id         serial"
         + "  , name       varchar( 255 )"
         + "  , primary key( id )"
-        + " )"
-        + " with( oids = false );"
+        + ")"
+        + "with( oids = false );"
       
         + "drop index if exists authors_names;"
         + "create index authors_names on public.authors using btree( name );";
@@ -238,7 +240,7 @@ public class DatabaseConnection
         + ")"
         + "values"
         + "(   default"
-        + "  , (select id from public.authors where name = ?)"
+        + "  , (select id from public.authors where name = ? limit 1)"
         + "  , ?"
         + "  , ?"
         + "  , ?"
@@ -263,8 +265,15 @@ public class DatabaseConnection
     return -1;
   }
   
-  public void deleteWriting( int writing_id )
+  public void deleteWriting( int id_writing ) throws SQLException
   {
-    // delete from public.writings where id = :writing_id: 
+    String sql;
+    PreparedStatement stmt;
+    sql = "delete from public.writings where id = ?" ;
+    stmt = _dbh.prepareStatement( sql );
+    org.postgresql.PGStatement pgstmt = (org.postgresql.PGStatement)stmt;
+    pgstmt.setPrepareThreshold(1);
+    stmt.setInt( 1, id_writing );
+    stmt.executeQuery();
   }
 }
