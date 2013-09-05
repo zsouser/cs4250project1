@@ -26,6 +26,10 @@
 // but if we're doing a lot of statistical calculation, maybe we 
 // should be using a statistical calculator like SAS or R?
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -48,12 +52,37 @@ public class DatabaseConnection
     // return DriverManager.getConnection(dbUrl, username, password);
 
     _dbh = null;
+    
+    String username, passwd;
+    username = null;
+    passwd = null;
+    BufferedReader buff;
     try {
-      // todo( mathew guest ): AFAIK, credentials should be moved to an external
-      // file and locked through the OS and not be plaintext here.
-      String username = "htnkjeetnanrjz";
-      String passwd = "0ydqgP3y7hYIqy9RoFRSDs-1Wu";
-      
+      buff = new BufferedReader( new FileReader( "db_credentials.txt" ) );
+      String line;
+      if( (line = buff.readLine()) == null ) {
+        System.out.println( "bad credentials file format" );
+        buff.close();
+        return;
+      }
+      username = line;
+      if( (line = buff.readLine()) == null ) {
+        System.out.println( "bad credentials file format" );
+        buff.close();
+        return;
+      }
+      passwd = line;
+      buff.close();
+    } catch( IOException ex ) {
+      return;
+    }
+
+    if( username == null|| passwd == null )
+      return;
+    // todo( mathew guest ): can't figure out how to close in a finally?
+    
+    
+    try {
       Class.forName( "org.postgresql.Driver" );
       Properties conn_prop = new Properties();
       conn_prop.setProperty( "user", username );
@@ -79,11 +108,13 @@ public class DatabaseConnection
   
   public void close() throws SQLException
   {
+    if( _dbh == null ) return;
     _dbh.close();
   }
   
   public void createTables() throws SQLException
   {
+    if( _dbh == null ) return;
     PreparedStatement stmt;
     String sql;
     
@@ -124,6 +155,7 @@ public class DatabaseConnection
   
   public void dropTables() throws SQLException
   {
+    if( _dbh == null ) return;
     PreparedStatement stmt;
     String sql;
     sql = "drop table if exists public.writings;"
@@ -135,6 +167,7 @@ public class DatabaseConnection
     
   public ResultSet fetchWritingsAll() throws SQLException 
   {
+    if( _dbh == null ) return null;
     Statement stmt = _dbh.createStatement();
     ResultSet rslts = stmt.executeQuery( "select * from public.writings" );
     return rslts;
@@ -142,6 +175,7 @@ public class DatabaseConnection
   
   public ResultSet fetchWritingsByAuthor( int id_author ) throws SQLException
   {
+    if( _dbh == null ) return null;
     String sql;
     PreparedStatement stmt;
     sql = "select * from public.writings where id_author = ?" ;
@@ -154,6 +188,7 @@ public class DatabaseConnection
   
   public ResultSet fetchWritingsByAuthor( String author_name ) throws SQLException
   {
+    if( _dbh == null ) return null;
     String sql;
     PreparedStatement stmt;
     sql = "select "
@@ -183,6 +218,7 @@ public class DatabaseConnection
                           , int mean_words_per_sentence
                           , int mean_characters_per_word ) throws SQLException
   {
+    if( _dbh == null ) return -1;
     String sql;
     PreparedStatement stmt;
     sql = "insert into public.writings"
@@ -226,6 +262,7 @@ public class DatabaseConnection
                           , int mean_words_per_sentence
                           , int mean_characters_per_word ) throws SQLException
   {
+    if( _dbh == null ) return -1;
     String sql;
     PreparedStatement stmt;
     sql = "insert into public.writings"
@@ -267,6 +304,7 @@ public class DatabaseConnection
   
   public void deleteWriting( int id_writing ) throws SQLException
   {
+    if( _dbh == null ) return;
     String sql;
     PreparedStatement stmt;
     sql = "delete from public.writings where id = ?" ;
