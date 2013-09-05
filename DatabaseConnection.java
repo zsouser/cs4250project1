@@ -53,6 +53,8 @@ public class DatabaseConnection
 
     _dbh = null;
     
+    // todo( mathew guest ): after the db_credentials.txt file gets uploaded to
+    // heroku, it should be removed from git and added to .gitignore
     String username, passwd;
     username = null;
     passwd = null;
